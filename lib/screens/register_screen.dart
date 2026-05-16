@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../services/auth_api_service.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -19,6 +21,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  final _authApiService = AuthApiService();
+
+  bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -60,8 +65,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return 'Veuillez saisir un mot de passe';
     }
 
-    if (value.length < 8) {
-      return 'Le mot de passe doit contenir au moins 8 caractères';
+    if (value.length < 12) {
+      return 'Le mot de passe doit contenir au moins 12 caractères';
     }
 
     return null;
@@ -79,14 +84,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  void _submitRegister() {
+  Future<void> _submitRegister() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Inscription prête à être reliée au back')),
-    );
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authApiService.register(
+        pseudo: _pseudoController.text.trim(),
+        mail: _mailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Compte créé avec succès')));
+
+      Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+    } on DioException catch (error) {
+      if (!mounted) return;
+
+      final responseData = error.response?.data;
+      final message =
+          responseData is Map && responseData['message'] != null
+              ? responseData['message'].toString()
+              : 'Impossible de créer le compte pour le moment';
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Une erreur inattendue est survenue')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   void _goToLogin() {
@@ -180,14 +225,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: _submitRegister,
-                  child: const Text('Créer mon compte'),
+                  onPressed: _isLoading ? null : _submitRegister,
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Créer mon compte'),
                 ),
               ),
               const SizedBox(height: 12),
               Center(
                 child: TextButton(
-                  onPressed: _goToLogin,
+                  onPressed: _isLoading ? null : _goToLogin,
                   child: const Text('Déjà un compte ? Se connecter'),
                 ),
               ),
