@@ -4,6 +4,7 @@ import '../services/token_storage_service.dart';
 import 'login_screen.dart';
 import 'profile_screen.dart';
 import 'register_screen.dart';
+import 'resources_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -131,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('CESIZen'),
         actions: [_buildHeaderAction()],
       ),
-      body: const Padding(
+      body: Padding(
         padding: EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,6 +145,18 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               "CESIZen est une application mobile dédiée à la gestion du stress et à la santé mentale.",
               style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.menu_book_outlined),
+                title: const Text('Ressources'),
+                subtitle: const Text('Consulter les contenus d’information'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.pushNamed(context, ResourcesScreen.routeName);
+                },
+              ),
             ),
           ],
         ),
