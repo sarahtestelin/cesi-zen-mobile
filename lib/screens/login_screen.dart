@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Une erreur inattendue est survenue')),
+        const SnackBar(content: Text('Une erreur est survenue')),
       );
     } finally {
       if (mounted) {
@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Connectez-vous pour accéder à votre espace CESIZen.',
+                'Connectez-vous pour accéder à votre profil CESIZen.',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32),

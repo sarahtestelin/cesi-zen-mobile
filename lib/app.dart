@@ -4,6 +4,7 @@ import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/profile_screen.dart';
 
 class CesiZenApp extends StatelessWidget {
   const CesiZenApp({super.key});
@@ -23,6 +24,7 @@ class CesiZenApp extends StatelessWidget {
         HomeScreen.routeName: (_) => const HomeScreen(),
         LoginScreen.routeName: (_) => const LoginScreen(),
         RegisterScreen.routeName: (_) => const RegisterScreen(),
+        ProfileScreen.routeName: (_) => const ProfileScreen(),
       },
     );
   }
