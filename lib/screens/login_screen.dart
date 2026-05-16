@@ -1,5 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+import '../services/auth_api_service.dart';
+import '../services/token_storage_service.dart';
+import 'home_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,9 +17,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final _mailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final _authApiService = AuthApiService();
+  final _tokenStorageService = TokenStorageService();
+
+  bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -42,21 +51,68 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Veuillez saisir votre mot de passe';
     }
 
-    if (value.length < 8) {
-      return 'Le mot de passe doit contenir au moins 8 caractères';
+    if (value.length < 12) {
+      return 'Le mot de passe doit contenir au moins 12 caractères';
     }
 
     return null;
   }
 
-  void _submitLogin() {
+  Future<void> _submitLogin() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Connexion prête à être reliée au back')),
-    );
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final accessToken = await _authApiService.login(
+        mail: _mailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      await _tokenStorageService.saveAccessToken(accessToken);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Connexion réussie')));
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        HomeScreen.routeName,
+        (route) => false,
+      );
+    } on DioException catch (error) {
+      if (!mounted) return;
+
+      final responseData = error.response?.data;
+      final message =
+          responseData is Map && responseData['message'] != null
+              ? responseData['message'].toString()
+              : responseData is String
+              ? responseData
+              : 'Identifiants incorrects ou serveur indisponible';
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Une erreur inattendue est survenue')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   void _goToRegister() {
@@ -119,14 +175,21 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: _submitLogin,
-                  child: const Text('Se connecter'),
+                  onPressed: _isLoading ? null : _submitLogin,
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Se connecter'),
                 ),
               ),
               const SizedBox(height: 12),
               Center(
                 child: TextButton(
-                  onPressed: _goToRegister,
+                  onPressed: _isLoading ? null : _goToRegister,
                   child: const Text('Pas encore de compte ? Créer un compte'),
                 ),
               ),

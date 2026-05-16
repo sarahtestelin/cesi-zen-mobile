@@ -35,7 +35,6 @@ class AuthApiService {
 
   Future<String> _getCsrfToken() async {
     final response = await _dio.get('/api/csrf');
-
     final data = response.data;
 
     if (data is Map && data['token'] != null) {
@@ -62,5 +61,27 @@ class AuthApiService {
       },
       options: Options(headers: {'X-XSRF-TOKEN': csrfToken}),
     );
+  }
+
+  Future<String> login({required String mail, required String password}) async {
+    final csrfToken = await _getCsrfToken();
+
+    final response = await _dio.post(
+      '/api/auth/login',
+      data: {
+        'mail': mail,
+        'password': password,
+        'deviceInfo': 'Android emulator',
+      },
+      options: Options(headers: {'X-XSRF-TOKEN': csrfToken}),
+    );
+
+    final data = response.data;
+
+    if (data is Map && data['accessToken'] != null) {
+      return data['accessToken'].toString();
+    }
+
+    throw Exception('Token de connexion introuvable');
   }
 }
