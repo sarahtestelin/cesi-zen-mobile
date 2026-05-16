@@ -53,7 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _goToProfile() {
-    Navigator.pushNamed(context, ProfileScreen.routeName);
+    Navigator.pushNamed(context, ProfileScreen.routeName).then((_) {
+      _loadConnectionState();
+    });
   }
 
   void _showAuthChoices() {
