@@ -42,4 +42,16 @@ class ResourceApiService {
 
     return [];
   }
+
+  Future<CesiResource> getResourceById(String id) async {
+    final response = await _dio.get('/api/v1/ressources/$id');
+
+    final data = response.data;
+
+    if (data is Map<String, dynamic>) {
+      return CesiResource.fromJson(data);
+    }
+
+    throw Exception('Ressource introuvable');
+  }
 }

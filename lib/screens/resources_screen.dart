@@ -34,12 +34,7 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (_) => ResourceDetailScreen(
-              title: resource.title,
-              category: resource.category,
-              content: resource.description,
-            ),
+        builder: (_) => ResourceDetailScreen(resourceId: resource.id),
       ),
     );
   }
