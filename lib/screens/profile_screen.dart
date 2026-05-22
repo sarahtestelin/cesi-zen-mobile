@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/token_storage_service.dart';
+import 'diagnostic_history_screen.dart';
 import 'home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -101,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Voici les informations de votre compte CESIZen.',
+              'Voici votre profil CESIZen.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 32),
@@ -126,6 +127,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 value: _role!,
               ),
             const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    DiagnosticHistoryScreen.routeName,
+                  );
+                },
+                icon: const Icon(Icons.history),
+                label: const Text('Historique des diagnostics'),
+              ),
+            ),
+            const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: FilledButton(

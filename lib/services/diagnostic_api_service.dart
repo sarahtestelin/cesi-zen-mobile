@@ -93,4 +93,29 @@ class DiagnosticApiService {
 
     throw Exception('Résultat du diagnostic introuvable');
   }
+
+  Future<List<DiagnosticResult>> getMyResults() async {
+    final accessToken = await _tokenStorageService.getAccessToken();
+
+    if (accessToken == null || accessToken.isEmpty) {
+      return [];
+    }
+
+    final response = await _dio.get(
+      '/api/v1/diagnostics/results/me',
+      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+    );
+
+    final data = response.data;
+
+    if (data is List) {
+      return data
+          .map(
+            (item) => DiagnosticResult.fromJson(item as Map<String, dynamic>),
+          )
+          .toList();
+    }
+
+    return [];
+  }
 }

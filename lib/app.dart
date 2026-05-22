@@ -7,6 +7,7 @@ import 'screens/splash_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/resources_screen.dart';
 import 'screens/diagnostic_screen.dart';
+import 'screens/diagnostic_history_screen.dart';
 
 class CesiZenApp extends StatelessWidget {
   const CesiZenApp({super.key});
@@ -29,6 +30,8 @@ class CesiZenApp extends StatelessWidget {
         ProfileScreen.routeName: (_) => const ProfileScreen(),
         ResourcesScreen.routeName: (_) => const ResourcesScreen(),
         DiagnosticScreen.routeName: (_) => const DiagnosticScreen(),
+        DiagnosticHistoryScreen.routeName:
+            (_) => const DiagnosticHistoryScreen(),
       },
     );
   }
