@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'diagnostic_question_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class DiagnosticScreen extends StatelessWidget {
   static const String routeName = '/diagnostic';
@@ -18,6 +19,7 @@ class DiagnosticScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Diagnostic')),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

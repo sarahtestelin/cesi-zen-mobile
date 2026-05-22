@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/token_storage_service.dart';
 import 'diagnostic_history_screen.dart';
 import 'home_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
@@ -89,6 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Mon profil')),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

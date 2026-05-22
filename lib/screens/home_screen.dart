@@ -6,6 +6,7 @@ import 'profile_screen.dart';
 import 'register_screen.dart';
 import 'resources_screen.dart';
 import 'diagnostic_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -133,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('CESIZen'),
         actions: [_buildHeaderAction()],
       ),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: EdgeInsets.all(24),
         child: Column(
