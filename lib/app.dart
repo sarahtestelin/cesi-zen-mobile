@@ -8,6 +8,9 @@ import 'screens/profile_screen.dart';
 import 'screens/resources_screen.dart';
 import 'screens/diagnostic_screen.dart';
 import 'screens/diagnostic_history_screen.dart';
+import 'screens/edit_profile_screen.dart';
+import 'screens/change_password_screen.dart';
+import 'screens/export_data_screen.dart';
 
 class CesiZenApp extends StatelessWidget {
   const CesiZenApp({super.key});
@@ -32,6 +35,9 @@ class CesiZenApp extends StatelessWidget {
         DiagnosticScreen.routeName: (_) => const DiagnosticScreen(),
         DiagnosticHistoryScreen.routeName:
             (_) => const DiagnosticHistoryScreen(),
+        EditProfileScreen.routeName: (_) => const EditProfileScreen(),
+        ChangePasswordScreen.routeName: (_) => const ChangePasswordScreen(),
+        ExportDataScreen.routeName: (_) => const ExportDataScreen(),
       },
     );
   }

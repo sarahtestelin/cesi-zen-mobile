@@ -1,9 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../models/app_user.dart';
 import '../services/token_storage_service.dart';
 import '../services/user_api_service.dart';
+import 'change_password_screen.dart';
 import 'diagnostic_history_screen.dart';
+import 'edit_profile_screen.dart';
+import 'export_data_screen.dart';
 import 'home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,6 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _tokenStorageService = TokenStorageService();
 
   late Future<AppUser> _userFuture;
+
+  bool _isDeleting = false;
 
   @override
   void initState() {
@@ -49,10 +55,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showFeatureComingSoon(String featureName) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$featureName à venir')));
+  Future<void> _confirmDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Supprimer mon compte'),
+          content: const Text(
+            'Cette action est définitive. Votre compte sera supprimé et vous serez déconnecté.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Annuler'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await _deleteAccount();
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    setState(() {
+      _isDeleting = true;
+    });
+
+    try {
+      await _userApiService.deleteMyAccount();
+      await _tokenStorageService.clear();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compte supprimé avec succès')),
+      );
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        HomeScreen.routeName,
+        (route) => false,
+      );
+    } on DioException catch (error) {
+      if (!mounted) return;
+
+      final responseData = error.response?.data;
+      final message =
+          responseData is Map && responseData['message'] != null
+              ? responseData['message'].toString()
+              : 'Impossible de supprimer le compte';
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Une erreur est survenue')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
+        });
+      }
+    }
   }
 
   Widget _buildInfoLine({
@@ -120,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Voici les informations de votre compte CESIZen.',
+            'Votre profil CESIZen.',
             style: TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 32),
@@ -145,20 +220,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildActionButton(
             icon: Icons.edit_outlined,
             label: 'Modifier mon profil',
-            onPressed: () => _showFeatureComingSoon('Modification du profil'),
+            onPressed: () {
+              Navigator.pushNamed(context, EditProfileScreen.routeName).then((
+                updated,
+              ) {
+                if (updated == true) {
+                  _reloadProfile();
+                }
+              });
+            },
           ),
           const SizedBox(height: 12),
           _buildActionButton(
             icon: Icons.lock_outline,
             label: 'Changer mon mot de passe',
-            onPressed:
-                () => _showFeatureComingSoon('Changement de mot de passe'),
+            onPressed: () {
+              Navigator.pushNamed(context, ChangePasswordScreen.routeName);
+            },
           ),
           const SizedBox(height: 12),
           _buildActionButton(
             icon: Icons.download_outlined,
             label: 'Exporter mes données',
-            onPressed: () => _showFeatureComingSoon('Export des données'),
+            onPressed: () {
+              Navigator.pushNamed(context, ExportDataScreen.routeName);
+            },
           ),
           const SizedBox(height: 12),
           _buildActionButton(
@@ -171,15 +257,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 12),
           _buildActionButton(
             icon: Icons.delete_outline,
-            label: 'Supprimer mon compte',
+            label: _isDeleting ? 'Suppression...' : 'Supprimer mon compte',
             danger: true,
-            onPressed: () => _showFeatureComingSoon('Suppression du compte'),
+            onPressed: _isDeleting ? () {} : _confirmDeleteAccount,
           ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: _logout,
+              onPressed: _isDeleting ? null : _logout,
               child: const Text('Se déconnecter'),
             ),
           ),
