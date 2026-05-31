@@ -5,6 +5,8 @@ import 'login_screen.dart';
 import 'profile_screen.dart';
 import 'register_screen.dart';
 import 'resources_screen.dart';
+import 'diagnostic_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -132,6 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('CESIZen'),
         actions: [_buildHeaderAction()],
       ),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: EdgeInsets.all(24),
         child: Column(
@@ -155,6 +158,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.pushNamed(context, ResourcesScreen.routeName);
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.psychology_outlined),
+                title: const Text('Diagnostic'),
+                subtitle: const Text('Évaluer son niveau de stress'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.pushNamed(context, DiagnosticScreen.routeName);
                 },
               ),
             ),

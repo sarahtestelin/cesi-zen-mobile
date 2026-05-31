@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/cesi_resource.dart';
 import '../services/resource_api_service.dart';
 import 'resource_detail_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class ResourcesScreen extends StatefulWidget {
   static const String routeName = '/resources';
@@ -55,6 +56,7 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Ressources')),
+      drawer: const AppDrawer(),
       body: FutureBuilder<List<CesiResource>>(
         future: _resourcesFuture,
         builder: (context, snapshot) {
